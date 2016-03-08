@@ -8,12 +8,16 @@
 Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
-    // First test
-    /* 
-     * TODO: Do any initialization you need to do here (setting up the board,
-     * precalculating things, etc.) However, remember that you will only have
-     * 30 seconds.
-     */
+    board = new Board();
+    this->mySide = side;
+    if (side == BLACK)
+    {
+        this->opSide = WHITE;
+    }
+    else
+    {
+        this->opSide = BLACK;
+    }
 }
 
 /*
@@ -35,9 +39,89 @@ Player::~Player() {
  * return NULL.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    /* 
-     * TODO: Implement how moves your AI should play here. You should first
-     * process the opponent's opponents move before calculating your own move
-     */ 
-    return NULL;
+    board->doMove(opponentsMove, opSide);
+    std::vector<Move*> possible = possibleMoves(mySide, board);
+    if (possible.size() == 0)
+    {
+        return NULL;
+    }
+    Move * best_move = miniMax(possible);
+    board->doMove(best_move, mySide);
+    return best_move;
+}
+
+std::vector<Move*> Player::possibleMoves(Side side, Board * board)
+{
+    std::vector<Move*> possible;
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            Move * move = new Move(x, y);
+            if (board->checkMove(move, side))
+            {
+                possible.push_back(move);
+            }
+        }
+    }
+    return possible;
+}
+
+Move *Player::simpleHeuristics(std::vector<Move*> possible)
+{
+    int best_score = std::numeric_limits<int>::min();
+    Move * best_move;
+    for (unsigned int i = 0; i < possible.size(); i++)
+    {
+        Board * copy = board->copy();
+        copy->doMove(possible[i], mySide);
+        int score = copy->count(mySide) - copy->count(opSide);
+        if (score > best_score)
+        {
+            best_score = score;
+            best_move = possible[i];
+        }
+    }
+    return best_move;
+}
+
+Board *Player::getBoard()
+{
+    return board;
+}
+
+Move *Player::miniMax(std::vector<Move*> possible)
+{
+
+    Move * best_move;
+    int best_score = std::numeric_limits<int>::min();
+
+
+    for (unsigned int i = 0; i < possible.size(); i++)
+    {
+        int worst_score = std::numeric_limits<int>::max();
+
+        Board * copy = board->copy();
+        copy->doMove(possible[i], mySide);
+
+        std::vector<Move*> opMoves = possibleMoves(opSide, copy);
+
+        for (unsigned int j = 0; j < opMoves.size(); j++)
+        {
+            Board * copy2 = copy->copy();
+            copy2->doMove(opMoves[j], opSide);
+
+            int score = copy2->count(mySide) - copy2->count(opSide);
+            if (score < worst_score)
+            {
+                worst_score = score;
+            }
+        }
+        if (worst_score > best_score)
+        {
+            best_score = worst_score;
+            best_move = possible[i];
+        }
+    }
+    return best_move;
 }
