@@ -125,7 +125,7 @@ Board *Player::getBoard()
 Move *Player::miniMax(std::vector<Move*> possible)
 {
 
-    Move * best_move;
+    Move * best_move = NULL;
     // Initialize best_score to be the lowest int possible
     int best_score = std::numeric_limits<int>::min();
 
@@ -157,11 +157,31 @@ Move *Player::miniMax(std::vector<Move*> possible)
             }
             delete copy2;
         }
+
+        for (unsigned int k = 0; k < opMoves.size(); k++)
+        {
+            delete opMoves[k];
+        }
+
         // Find the least-worst case scenario. That is the best move.
         if (worst_score > best_score)
         {
-            best_score = worst_score;
-            best_move = possible[i];
+            if (!(best_move == NULL))
+            {
+                Move * temp = best_move;
+                best_score = worst_score;
+                best_move = possible[i];
+                delete temp;
+            }
+            else
+            {
+                best_score = worst_score;
+                best_move = possible[i];
+            }
+        }
+        else
+        {
+            delete possible[i];
         }
         delete copy;
     }
