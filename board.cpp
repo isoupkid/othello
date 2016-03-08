@@ -178,3 +178,25 @@ void Board::setBoard(char data[]) {
         }
     }
 }
+
+int Board::count_corners(Side side)
+{
+    int corners = 0;
+    if (get(side, 0, 0))
+    {
+        corners++;
+    }
+    if (get(side, 7, 7))
+    {
+        corners++;
+    }
+    if (get(side, 0, 7))
+    {
+        corners++;
+    }
+    if (get(side, 7, 0))
+    {
+        corners++;
+    }
+    return corners;
+}

@@ -17,9 +17,10 @@ public:
     
     Move *doMove(Move *opponentsMove, int msLeft);
     std::vector<Move*> possibleMoves(Side side, Board * board);
-    Move *simpleHeuristics(std::vector<Move*> possible);
+    Move *naiveHeuristics(std::vector<Move*> possible);
     Board *getBoard();
     Move *miniMax(std::vector<Move*> possible);
+    int heuristic_calculation(Board * board);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;

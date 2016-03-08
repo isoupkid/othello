@@ -85,7 +85,7 @@ std::vector<Move*> Player::possibleMoves(Side side, Board * board)
  * Implementation of naive heuristics approach - determines the best
  * move by maximizing current score, and returns that move.
  */
-Move *Player::simpleHeuristics(std::vector<Move*> possible)
+Move *Player::naiveHeuristics(std::vector<Move*> possible)
 {
     // Initialize best_score to be the smallest int
     int best_score = std::numeric_limits<int>::min();
@@ -150,14 +150,13 @@ Move *Player::miniMax(std::vector<Move*> possible)
             Board * copy2 = copy->copy();
             copy2->doMove(opMoves[j], opSide);
 
-            int score = copy2->count(mySide) - copy2->count(opSide);
+            int score = heuristic_calculation(copy2);
             if (score < worst_score)
             {
                 worst_score = score;
             }
             delete copy2;
         }
-
         for (unsigned int k = 0; k < opMoves.size(); k++)
         {
             delete opMoves[k];
@@ -186,4 +185,21 @@ Move *Player::miniMax(std::vector<Move*> possible)
         delete copy;
     }
     return best_move;
+}
+
+int Player::heuristic_calculation(Board * board)
+{
+    int coin_parity = 0;
+    int corner_score = 0;
+
+    coin_parity = board->count(mySide) - board->count(opSide);
+    if (board->count_corners(mySide) + board->count_corners(opSide) == 0)
+    {
+        corner_score = 0;
+    }
+    else
+    {
+        corner_score = 5 * (board->count_corners(mySide) - board->count_corners(opSide));
+    }
+    return coin_parity + corner_score;
 }
