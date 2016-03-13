@@ -97,7 +97,7 @@ Move *Player::simpleHeuristics(std::vector<Move*> possible)
         Board * copy = board->copy();
         copy->doMove(possible[i], mySide);
         // Calculate score of that move
-        int score = copy->count(mySide) - copy->count(opSide);
+        int score = copy->heuristics(mySide, opSide);
         if (score > best_score)
         {
             best_score = score;
@@ -150,7 +150,7 @@ Move *Player::miniMax(std::vector<Move*> possible)
             Board * copy2 = copy->copy();
             copy2->doMove(opMoves[j], opSide);
 
-            int score = copy2->count(mySide) - copy2->count(opSide);
+            int score = copy2->heuristics(mySide, opSide);
             if (score < worst_score)
             {
                 worst_score = score;

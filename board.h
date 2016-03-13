@@ -30,6 +30,7 @@ public:
     int countWhite();
 
     void setBoard(char data[]);
+    int heuristics(Side mySide, Side opSide);
 };
 
 #endif

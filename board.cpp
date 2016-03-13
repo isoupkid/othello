@@ -178,3 +178,33 @@ void Board::setBoard(char data[]) {
         }
     }
 }
+
+int Board::heuristics(Side mySide, Side opSide)
+{
+    int weighted_board[64] = {
+        100, 10, 2, 2, 2, 2, 10, 100,
+        10, -5, 1, 1, 1, 1, -5, 3,
+        3, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 1, 1, 3,
+        10, -5, 1, 1, 1, 1, -5, 10,
+        100, 10, 3, 3, 3, 3, 10, 100
+    };
+    int score = 0;
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < 7; j++)
+        {
+            if (get(mySide, i, j))
+            {
+                score += weighted_board[i + 8 * j];
+            }
+            else if (get(opSide, i, j))
+            {
+                score -= weighted_board[i + 8 * j];
+            }
+        }
+    }
+    return score;
+}
