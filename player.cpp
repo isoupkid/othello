@@ -44,14 +44,15 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     board->doMove(opponentsMove, opSide);
 
     // Find all possible moves
-    std::vector<Move*> possible = possibleMoves(mySide, board);
+    //std::vector<Move*> possible = possibleMoves(mySide, board);
     // If no possible moves, must pass.
-    if (possible.size() == 0)
+    /*if (possible.size() == 0)
     {
         return NULL;
-    }
+    }*/
     // Find best move via minimax
-    Move * best_move = miniMax(possible);
+    Move * best_move = new Move(-1, -1);
+    *best_move = std::get<1>(recursive_miniMax(board, 3, true, mySide, opSide));
     // Update internal board
     board->doMove(best_move, mySide);
     return best_move;
@@ -186,4 +187,50 @@ Move *Player::miniMax(std::vector<Move*> possible)
         delete copy;
     }
     return best_move;
+}
+
+std::tuple<int, Move> Player::recursive_miniMax(Board * board, int depth, bool ismySide, Side mySide, Side opSide)
+{
+    if (depth == 0 || board->isDone())
+    {
+        return std::make_tuple(board->heuristics(mySide, opSide), Move(-1, -1));
+    }
+    if (ismySide)
+    {
+        int bestValue = std::numeric_limits<int>::min();
+        int val;
+        std::vector<Move*> possible = possibleMoves(mySide, board);
+        Board * copy = board->copy();
+        Move * best_move = possible[0];
+        for (unsigned int i = 0; i < possible.size(); i++)
+        {
+            copy->doMove(possible[i], mySide);
+            val = std::get<0>(recursive_miniMax(copy, depth - 1, false, mySide, opSide));
+            if (val > bestValue)
+            {
+                bestValue = val;
+                best_move = possible[i];
+            }
+        }
+        return std::make_tuple(bestValue, *best_move);
+    }
+    else
+    {
+        int bestValue = std::numeric_limits<int>::max();
+        int val;
+        std::vector<Move*> possible = possibleMoves(opSide, board);
+        Board * copy = board->copy();
+        Move * best_move = possible[0];
+        for (unsigned int i = 0; i < possible.size(); i++)
+        {
+            copy->doMove(possible[i], opSide);
+            val = std::get<0>(recursive_miniMax(copy, depth - 1, true, mySide, opSide));
+            if (val < bestValue)
+            {
+                bestValue = val;
+                best_move = possible[i];
+            }
+        }
+        return std::make_tuple(bestValue, *best_move);
+    }
 }

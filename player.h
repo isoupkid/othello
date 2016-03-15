@@ -7,6 +7,7 @@
 #include <vector>
 #include <limits>
 #include <cstdio>
+#include <tuple>
 using namespace std;
 
 class Player {
@@ -20,6 +21,7 @@ public:
     Move *simpleHeuristics(std::vector<Move*> possible);
     Board *getBoard();
     Move *miniMax(std::vector<Move*> possible);
+    tuple<int, Move> recursive_miniMax(Board * board, int depth, bool ismySide, Side mySide, Side opSide);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
