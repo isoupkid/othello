@@ -44,15 +44,18 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     board->doMove(opponentsMove, opSide);
 
     // Find all possible moves
-    //std::vector<Move*> possible = possibleMoves(mySide, board);
+    std::vector<Move*> possible = possibleMoves(mySide, board);
     // If no possible moves, must pass.
     /*if (possible.size() == 0)
     {
         return NULL;
     }*/
+    Move * best_move = miniMax(possible);
     // Find best move via minimax
-    Move * best_move = new Move(-1, -1);
+    /*Move * best_move = new Move(-1, -1);
+    std::cerr << "HI" << std::endl;
     *best_move = std::get<1>(recursive_miniMax(board, 3, true, mySide, opSide));
+    std::cerr << best_move->getX() << std::endl;*/
     // Update internal board
     board->doMove(best_move, mySide);
     return best_move;
@@ -86,7 +89,7 @@ std::vector<Move*> Player::possibleMoves(Side side, Board * board)
  * Implementation of naive heuristics approach - determines the best
  * move by maximizing current score, and returns that move.
  */
-Move *Player::simpleHeuristics(std::vector<Move*> possible)
+Move *Player::naiveHeuristics(std::vector<Move*> possible)
 {
     // Initialize best_score to be the smallest int
     int best_score = std::numeric_limits<int>::min();
@@ -158,7 +161,6 @@ Move *Player::miniMax(std::vector<Move*> possible)
             }
             delete copy2;
         }
-
         for (unsigned int k = 0; k < opMoves.size(); k++)
         {
             delete opMoves[k];
@@ -202,7 +204,7 @@ std::tuple<int, Move> Player::recursive_miniMax(Board * board, int depth, bool i
         std::vector<Move*> possible = possibleMoves(mySide, board);
         Board * copy = board->copy();
         Move * best_move = possible[0];
-        for (unsigned int i = 0; i < possible.size(); i++)
+        for (unsigned int i = 1; i < possible.size(); i++)
         {
             copy->doMove(possible[i], mySide);
             val = std::get<0>(recursive_miniMax(copy, depth - 1, false, mySide, opSide));
@@ -221,7 +223,7 @@ std::tuple<int, Move> Player::recursive_miniMax(Board * board, int depth, bool i
         std::vector<Move*> possible = possibleMoves(opSide, board);
         Board * copy = board->copy();
         Move * best_move = possible[0];
-        for (unsigned int i = 0; i < possible.size(); i++)
+        for (unsigned int i = 1; i < possible.size(); i++)
         {
             copy->doMove(possible[i], opSide);
             val = std::get<0>(recursive_miniMax(copy, depth - 1, true, mySide, opSide));

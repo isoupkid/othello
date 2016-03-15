@@ -179,6 +179,7 @@ void Board::setBoard(char data[]) {
     }
 }
 
+
 int Board::heuristics(Side mySide, Side opSide)
 {
     int weighted_board[64] = {
